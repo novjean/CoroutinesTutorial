@@ -6,17 +6,29 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.novatech.coroutinestutorial.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     val TAG = "MainActivity"
 
+    private lateinit var binding: ActivityMainBinding
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+//        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -29,12 +41,25 @@ class MainActivity : AppCompatActivity() {
 //        }
 //        Log.d(TAG, "Hello from thread ${Thread.currentThread().name}")
 
-        GlobalScope.launch {
-            val networkCallAnswer = doNetworkCall()
-            Log.d(TAG, networkCallAnswer)
+//        GlobalScope.launch {
+//            val networkCallAnswer = doNetworkCall()
+//            Log.d(TAG, networkCallAnswer)
+//
+//            val networkCallAnswer2 = doNetworkCall2()
+//            Log.d(TAG, networkCallAnswer2)
+//        }
 
-            val networkCallAnswer2 = doNetworkCall2()
-            Log.d(TAG, networkCallAnswer2)
+//        GlobalScope.launch(newSingleThreadContext("MyThread")) {
+//
+//        }
+
+        GlobalScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "Starting coroutine in thread ${Thread.currentThread().name}")
+            val answer = doNetworkCall()
+            withContext(Dispatchers.Main) {
+                Log.d(TAG, "Starting coroutine in thread ${Thread.currentThread().name}")
+                binding.tvDummy.text = answer
+            }
         }
     }
 

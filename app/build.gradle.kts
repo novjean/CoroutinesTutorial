@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+//    id("kotlin-android-extensions")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -10,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.novatech.coroutinestutorial"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -32,6 +34,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
