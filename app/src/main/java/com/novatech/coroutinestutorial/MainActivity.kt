@@ -1,11 +1,13 @@
 package com.novatech.coroutinestutorial
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.novatech.coroutinestutorial.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -110,26 +112,32 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-        GlobalScope.launch(Dispatchers.IO) {
-            val time = measureTimeMillis {
-//                val answer1 = networkCall1()
-//                val answer2 = networkCall2()
-
-//                var answer1: String? = null
-//                var answer2: String? = null
+//        GlobalScope.launch(Dispatchers.IO) {
+//            val time = measureTimeMillis {
+//                val answer1 = async { networkCall1() }
+//                val answer2 = async { networkCall2() }
 //
-//                val job1 = launch { answer1 = networkCall1() }
-//                val job2 = launch { answer2 = networkCall2() }
-//                job1.join()
-//                job2.join()
+//                Log.d(TAG, "Answer 1 is ${answer1.await()}")
+//                Log.d(TAG, "Answer 2 is ${answer2.await()}")
+//            }
+//            Log.d(TAG, "Request took $time ms")
+//        }
 
-                val answer1 = async { networkCall1() }
-                val answer2 = async { networkCall2() }
 
-                Log.d(TAG, "Answer 1 is ${answer1.await()}")
-                Log.d(TAG, "Answer 2 is ${answer2.await()}")
+        binding.btnStartActivity.setOnClickListener{
+            lifecycleScope.launch {
+                while (true){
+                    delay(1000L)
+                    Log.d(TAG, "Still running....")
+                }
             }
-            Log.d(TAG, "Request took $time ms")
+            lifecycleScope.launch {
+                delay(5000L)
+                Intent(this@MainActivity, SecondActivity::class.java).also {
+                    startActivity(it)
+                    finish()
+                }
+            }
         }
 
 
