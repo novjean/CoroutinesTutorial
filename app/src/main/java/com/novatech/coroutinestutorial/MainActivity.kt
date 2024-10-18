@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
@@ -53,14 +54,30 @@ class MainActivity : AppCompatActivity() {
 //
 //        }
 
-        GlobalScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "Starting coroutine in thread ${Thread.currentThread().name}")
-            val answer = doNetworkCall()
-            withContext(Dispatchers.Main) {
-                Log.d(TAG, "Starting coroutine in thread ${Thread.currentThread().name}")
-                binding.tvDummy.text = answer
+//        GlobalScope.launch(Dispatchers.IO) {
+//            Log.d(TAG, "Starting coroutine in thread ${Thread.currentThread().name}")
+//            val answer = doNetworkCall()
+//            withContext(Dispatchers.Main) {
+//                Log.d(TAG, "Starting coroutine in thread ${Thread.currentThread().name}")
+//                binding.tvDummy.text = answer
+//            }
+//        }
+
+        Log.d(TAG, "before run blocking")
+        runBlocking {
+            launch(Dispatchers.IO) {
+                delay(3000L)
+                Log.d(TAG, "finished IO coroutine 1")
             }
+            launch(Dispatchers.IO) {
+                delay(3000L)
+                Log.d(TAG, "finished IO coroutine 2")
+            }
+            Log.d(TAG, "start run blocking")
+            delay(5000L)
+            Log.d(TAG, "end run blocking")
         }
+        Log.d(TAG, "after run blocking")
     }
 
     suspend fun doNetworkCall(): String{
