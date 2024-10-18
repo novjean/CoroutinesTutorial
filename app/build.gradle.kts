@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
 //    id("kotlin-android-extensions")
     id("kotlin-parcelize")
+//    id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -59,4 +61,9 @@ dependencies {
     // Coroutine Lifecycle Scopes
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+
+    // Firestore
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-firestore-ktx:25.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1")
 }

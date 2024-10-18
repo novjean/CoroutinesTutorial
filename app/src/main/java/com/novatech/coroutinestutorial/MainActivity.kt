@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.novatech.coroutinestutorial.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -17,9 +19,15 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlin.system.measureTimeMillis
+
+data class Person(
+    val name: String = "",
+    val age: Int = -1
+)
 
 class MainActivity : AppCompatActivity() {
     val TAG = "MainActivity"
@@ -124,21 +132,42 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-        binding.btnStartActivity.setOnClickListener{
-            lifecycleScope.launch {
-                while (true){
-                    delay(1000L)
-                    Log.d(TAG, "Still running....")
+//        binding.btnStartActivity.setOnClickListener{
+//            lifecycleScope.launch {
+//                while (true){
+//                    delay(1000L)
+//                    Log.d(TAG, "Still running....")
+//                }
+//            }
+//            lifecycleScope.launch {
+//                delay(5000L)
+//                Intent(this@MainActivity, SecondActivity::class.java).also {
+//                    startActivity(it)
+//                    finish()
+//                }
+//            }
+//        }
+
+
+        // firebase
+        try {
+            val tutorialDocument = Firebase.firestore.collection("coroutines")
+                .document("tutorial")
+            val peter = Person("Peter", 25)
+
+            GlobalScope.launch(Dispatchers.IO) {
+                delay(10000L)
+
+                tutorialDocument.set(peter).await()
+                val person = tutorialDocument.get().await().toObject(Person::class.java)
+                withContext(Dispatchers.Main) {
+                    binding.tvData.text = person.toString()
                 }
             }
-            lifecycleScope.launch {
-                delay(5000L)
-                Intent(this@MainActivity, SecondActivity::class.java).also {
-                    startActivity(it)
-                    finish()
-                }
-            }
+        } catch (e:Exception){
+            Log.e(TAG, e.toString())
         }
+
 
 
     }
