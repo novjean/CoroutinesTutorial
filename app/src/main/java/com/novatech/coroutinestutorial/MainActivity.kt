@@ -10,10 +10,12 @@ import com.novatech.coroutinestutorial.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 class MainActivity : AppCompatActivity() {
     val TAG = "MainActivity"
@@ -63,21 +65,54 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 
-        Log.d(TAG, "before run blocking")
-        runBlocking {
-            launch(Dispatchers.IO) {
-                delay(3000L)
-                Log.d(TAG, "finished IO coroutine 1")
+//        Log.d(TAG, "before run blocking")
+//        runBlocking {
+//            launch(Dispatchers.IO) {
+//                delay(3000L)
+//                Log.d(TAG, "finished IO coroutine 1")
+//            }
+//            launch(Dispatchers.IO) {
+//                delay(3000L)
+//                Log.d(TAG, "finished IO coroutine 2")
+//            }
+//            Log.d(TAG, "start run blocking")
+//            delay(5000L)
+//            Log.d(TAG, "end run blocking")
+//        }
+//        Log.d(TAG, "after run blocking")
+
+
+        val job = GlobalScope.launch(Dispatchers.Default) {
+//            repeat(5) {
+//                Log.d(TAG, "Coroutine is still working")
+//                delay(1000L)
+//            }
+
+            Log.d(TAG, "Starting long running calculation...")
+
+            withTimeout(3000L){
+                for(i in 30..80){
+                    if(isActive){
+                        Log.d(TAG, "Result for i = $i: ${fib(i)}")
+                    }
+                }
             }
-            launch(Dispatchers.IO) {
-                delay(3000L)
-                Log.d(TAG, "finished IO coroutine 2")
-            }
-            Log.d(TAG, "start run blocking")
-            delay(5000L)
-            Log.d(TAG, "end run blocking")
         }
-        Log.d(TAG, "after run blocking")
+
+//        runBlocking {
+////            job.join()
+//
+//            delay(2000L)
+//            job.cancel()
+//            Log.d(TAG, "Canceled job!")
+//        }
+
+    }
+
+    fun fib(n: Int): Long {
+        return if(n==0) 0
+        else if(n==1) 1
+        else fib(n-1) + fib(n-2)
     }
 
     suspend fun doNetworkCall(): String{
