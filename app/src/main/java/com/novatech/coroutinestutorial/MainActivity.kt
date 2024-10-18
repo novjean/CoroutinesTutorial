@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.novatech.coroutinestutorial.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlin.system.measureTimeMillis
 
 class MainActivity : AppCompatActivity() {
     val TAG = "MainActivity"
@@ -82,22 +84,22 @@ class MainActivity : AppCompatActivity() {
 //        Log.d(TAG, "after run blocking")
 
 
-        val job = GlobalScope.launch(Dispatchers.Default) {
-//            repeat(5) {
-//                Log.d(TAG, "Coroutine is still working")
-//                delay(1000L)
+//        val job = GlobalScope.launch(Dispatchers.Default) {
+////            repeat(5) {
+////                Log.d(TAG, "Coroutine is still working")
+////                delay(1000L)
+////            }
+//
+//            Log.d(TAG, "Starting long running calculation...")
+//
+//            withTimeout(3000L){
+//                for(i in 30..80){
+//                    if(isActive){
+//                        Log.d(TAG, "Result for i = $i: ${fib(i)}")
+//                    }
+//                }
 //            }
-
-            Log.d(TAG, "Starting long running calculation...")
-
-            withTimeout(3000L){
-                for(i in 30..80){
-                    if(isActive){
-                        Log.d(TAG, "Result for i = $i: ${fib(i)}")
-                    }
-                }
-            }
-        }
+//        }
 
 //        runBlocking {
 ////            job.join()
@@ -107,7 +109,42 @@ class MainActivity : AppCompatActivity() {
 //            Log.d(TAG, "Canceled job!")
 //        }
 
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val time = measureTimeMillis {
+//                val answer1 = networkCall1()
+//                val answer2 = networkCall2()
+
+//                var answer1: String? = null
+//                var answer2: String? = null
+//
+//                val job1 = launch { answer1 = networkCall1() }
+//                val job2 = launch { answer2 = networkCall2() }
+//                job1.join()
+//                job2.join()
+
+                val answer1 = async { networkCall1() }
+                val answer2 = async { networkCall2() }
+
+                Log.d(TAG, "Answer 1 is ${answer1.await()}")
+                Log.d(TAG, "Answer 2 is ${answer2.await()}")
+            }
+            Log.d(TAG, "Request took $time ms")
+        }
+
+
     }
+
+    suspend fun networkCall1(): String{
+        delay(3000L)
+        return "Answer 1"
+    }
+
+    suspend fun networkCall2(): String{
+        delay(3000L)
+        return "Answer 2"
+    }
+
 
     fun fib(n: Int): Long {
         return if(n==0) 0
