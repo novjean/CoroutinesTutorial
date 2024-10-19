@@ -11,6 +11,9 @@ import androidx.lifecycle.lifecycleScope
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.novatech.coroutinestutorial.databinding.ActivityMainBinding
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -19,6 +22,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -168,6 +172,63 @@ class MainActivity : AppCompatActivity() {
 //            Log.e(TAG, e.toString())
 //        }
 
+
+        // coroutine cancelation and exception handling
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            println("Caught exception: $throwable")
+        }
+
+//        lifecycleScope.launch(handler) {
+//            launch {
+//                throw Exception("Error")
+//            }
+//        }
+
+//        CoroutineScope(Dispatchers.Main + handler).launch {
+//            supervisorScope {
+//                launch {
+//                    delay(300L)
+//                    throw Exception("Coroutine 1 failed")
+//                }
+//                launch {
+//                    delay(400L)
+//                    Log.d(TAG, "Coroutine 2 finished")
+//                }
+//            }
+//        }
+
+        lifecycleScope.launch {
+            val job = launch {
+                try{
+                    delay(500L)
+                } catch(e:Exception){
+                    if(e is CancellationException){
+                        throw e
+                    }
+                    e.printStackTrace()
+                }
+                println("Coroutine 1 finished")
+            }
+            delay(300L)
+            job.cancel()
+        }
+
+//        val deferred = lifecycleScope.async {
+//            val string = async {
+//                delay(500L)
+//                throw Exception("error")
+//                "Result"
+//            }
+////            println(string.await())
+//        }
+//
+//        lifecycleScope.launch {
+//            try {
+//                deferred.await()
+//            } catch (e:Exception){
+//                Log.e(TAG, e.toString())
+//            }
+//        }
 
     }
 
