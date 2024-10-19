@@ -132,42 +132,41 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-//        binding.btnStartActivity.setOnClickListener{
+        binding.btnStartActivity.setOnClickListener{
 //            lifecycleScope.launch {
 //                while (true){
 //                    delay(1000L)
 //                    Log.d(TAG, "Still running....")
 //                }
 //            }
-//            lifecycleScope.launch {
+            lifecycleScope.launch {
 //                delay(5000L)
-//                Intent(this@MainActivity, SecondActivity::class.java).also {
-//                    startActivity(it)
-//                    finish()
-//                }
-//            }
-//        }
+                Intent(this@MainActivity, SecondActivity::class.java).also {
+                    startActivity(it)
+                    finish()
+                }
+            }
+        }
 
 
         // firebase
-        try {
-            val tutorialDocument = Firebase.firestore.collection("coroutines")
-                .document("tutorial")
-            val peter = Person("Peter", 25)
-
-            GlobalScope.launch(Dispatchers.IO) {
-                delay(10000L)
-
-                tutorialDocument.set(peter).await()
-                val person = tutorialDocument.get().await().toObject(Person::class.java)
-                withContext(Dispatchers.Main) {
-                    binding.tvData.text = person.toString()
-                }
-            }
-        } catch (e:Exception){
-            Log.e(TAG, e.toString())
-        }
-
+//        try {
+//            val tutorialDocument = Firebase.firestore.collection("coroutines")
+//                .document("tutorial")
+//            val peter = Person("Peter", 25)
+//
+//            GlobalScope.launch(Dispatchers.IO) {
+//                delay(10000L)
+//
+//                tutorialDocument.set(peter).await()
+//                val person = tutorialDocument.get().await().toObject(Person::class.java)
+//                withContext(Dispatchers.Main) {
+//                    binding.tvData.text = person.toString()
+//                }
+//            }
+//        } catch (e:Exception){
+//            Log.e(TAG, e.toString())
+//        }
 
 
     }
